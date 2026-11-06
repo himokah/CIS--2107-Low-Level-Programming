@@ -1,0 +1,136 @@
+//Joshua Okah 
+//09/13/26
+//CIS 2107
+//Lab 03 Project ATM
+#include <stdio.h>
+#include <stdlib.h>
+unsigned int transactions;
+unsigned int money = 5000;
+const int PIN=3014;
+const int with_limit=1000;
+const int depo_limit=10000;
+unsigned int with_limit_counter;
+unsigned int depo_limit_counter;
+
+int pin(){
+    int attempts=0;
+    int valid_check;
+    while (attempts<3){
+        printf("Please Enter Pin:");
+        scanf("%d",&valid_check);
+        if (PIN != valid_check){
+            attempts++;}
+        else{
+            break;
+        }
+    }
+    if (attempts==3){
+        exit(1);}
+}
+
+int balance(int money) {
+    printf("Balance: %d\n", money);
+}
+
+int cash_withdrawl(int money){
+    int attempt=0;
+    unsigned int cash;
+    printf("Enter amount of Cash:");
+    scanf("%d",&cash);
+    while (getchar() != '\n');
+    while (cash % 20 != 0 || cash > 1000){
+        if (cash % 20 != 0)
+            printf("Amount must be a multiple of 20. Try again: ");
+        else
+            printf("Amount must be under 1000. Try again: ");
+        scanf("%d", &cash);
+        while (getchar() != '\n');
+        attempt++;
+        if (attempt == 3){
+            exit(1);
+        }
+    }
+    int tens  = cash / 10;
+    int remainder = cash % 10;
+    int fives = remainder / 5;
+    int ones  = remainder % 5;
+    printf("Dispensing: %d ten(s), %d five(s), %d one(s)\n", tens, fives, ones);
+    puts("==============================");
+    transactions++;
+    return cash;
+}
+
+int cash_deposition(int money){
+    int attempt=0;
+    unsigned int cash;
+    printf("Enter amount of Cash:");
+    scanf("%d",&cash);
+    while (getchar() != '\n');
+    while (cash > 10000){
+        printf("Amount must be under 10000. Try again: ");
+        scanf("%d", &cash);
+        while (getchar() != '\n');
+        attempt++;
+        if (attempt == 3){
+            exit(1);
+        }
+    }
+    int tens  = cash / 10;
+    int remainder = cash % 10;
+    int fives = remainder / 5;
+    int ones  = remainder % 5;
+    printf("You have deposited: %d ten(s), %d five(s), %d one(s)\n", tens, fives, ones);
+    puts("==============================");
+    transactions++;
+    return cash;
+}
+
+int quit(int money){
+    printf("Total Transactions Today:%d\n",transactions);
+    puts("Thank You for using Joshua's ATM");
+    exit(1);
+}
+
+int menu(){
+    int choice;
+    printf("1.Balance. \n2.Cash withdrawl. \n3.Cash Deposition \n4.Quit \nPlease Choose which option by number: ");
+    scanf("%d", &choice);
+    puts("==============================");
+    return choice;
+}
+
+int main() {
+    pin();
+    puts("==============================");
+    int choice=0;
+    while(choice !=4){ 
+        choice = menu();
+        if (choice == 1) {
+            balance(money);
+        }
+        if(choice==2){
+            int cash = cash_withdrawl(money);
+            with_limit_counter+=cash;
+            money-=cash;
+            if (with_limit_counter>=with_limit){
+                puts("Reached Maximum Withdrawl");
+                printf("Balance Left: %d\n", money);
+                exit(1);
+            }
+        }
+        if(choice==3){
+            int cash = cash_deposition(money);
+            depo_limit_counter+=cash;
+            money+=cash;
+            if (depo_limit_counter>=depo_limit){
+                puts("Reached Maximum Deposit");
+                printf("Balance Left: %d\n", money);
+                exit(1);
+            }
+        }
+        else if(choice==4){
+            quit(money);
+        }
+    }
+    return 0;
+}
